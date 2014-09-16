@@ -3,6 +3,8 @@ A series of useful commands written in python to interact with a MySQL Server ru
 # Motivation
 Docker is awesome, but when using MySQL on a Dockerized environment simple tasks can become commands with lots of options and arguments.
 
+__Note:__ The following commands will use the official MySQL docker image found at https://registry.hub.docker.com/_/mysql/
+
 # Commands provided
 
 ## mysqls (Start a new MySQL Server)
