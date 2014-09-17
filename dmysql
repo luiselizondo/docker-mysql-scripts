@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import sys
+from subprocess import call
+import argparse
+
+def runContainer(containerName):
+	''' Runs the mysql client using the containerName provided
+	'''
+
+	call("docker run -it --link="+containerName+":mysql --rm mysql sh -c 'exec mysql -h$MYSQL_PORT_3306_TCP_ADDR -P$MYSQL_PORT_3306_TCP_PORT -uroot -p'", shell=True)
+	return
+
+def main():
+	''' Creates the parser and executes the function runContainer
+	'''
+
+	parser = argparse.ArgumentParser(
+		description="Run mysql client on a docker container", 
+		prog="dmysql")
+
+	parser.add_argument("container", help="The mysql container to connect to")
+
+	args = parser.parse_args()
+
+	runContainer(args.container)
+	return
+
+# Execute the main function
+main()

@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+import sys
+from subprocess import call
+import os
+import argparse
+
+def runContainer(containerName, path, database = ""):
+	''' Runs the container calling docker run and passing
+			the necessary arguments. The database is optional since
+			we can import an .sql file without creating first a database or
+			specifying one.
+	''' 
+
+	# Split the path given and create a list out of it
+	pathList = path.split("/")
+
+	# Take the last element of the list because this is the file
+	fileName = pathList[-1]
+
+	# Read the path and get the directory
+	dirname = os.path.dirname(path)
+
+	if database:
+		print 'Importing {file} into database {database} using container {container}'.format(file=fileName, database=database, container=containerName)
+		call("docker run -it --link="+containerName+":mysql -v "+ dirname +":/tmp/import --rm mysql sh -c 'exec mysql -h$MYSQL_PORT_3306_TCP_ADDR -P$MYSQL_PORT_3306_TCP_PORT -uroot -p "+ database +" < /tmp/import/" + fileName + "'", shell=True)
+	else:
+		print 'Importing {file} into container {container}'.format(file=fileName, container=containerName)
+		call("docker run -it --link="+containerName+":mysql -v "+ dirname +":/tmp/import --rm mysql sh -c 'exec mysql -h$MYSQL_PORT_3306_TCP_ADDR -P$MYSQL_PORT_3306_TCP_PORT -uroot -p < /tmp/import/" + fileName + "'", shell=True)
+	return
+
+def main():
+	''' Interpret the command line arguments
+			and pass the options to runContainer
+	'''
+
+	parser = argparse.ArgumentParser(
+		description="Import a .sql file into a database", 
+		prog="dmysql-import-database")
+
+	# Create the options
+	parser.add_argument("container", help="The mysql container to use")
+	parser.add_argument("filepath", help="File to the sql file you want to import")
+	parser.add_argument("--database", help="Database to import the file into")
+
+	args = parser.parse_args()
+
+	if args.database:
+		runContainer(args.container, args.filepath, args.database)
+	else:
+		runContainer(args.container, args.filepath)
+	return
+
+# Execute main
+main()

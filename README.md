@@ -7,28 +7,17 @@ __Note:__ The following commands will use the official MySQL docker image found 
 
 # Commands provided
 
-## mysqls (Start a new MySQL Server)
-
-	Usage: mysqls [MYSQL CONTAINER NAME] [MYSQL ROOT PASSWORD] --with-volume
-	Provide the container name and the root password. If you enter --with-volume a
-	data-only container will be created for you
-
-## mysqlc (Open the mysql cli)
-
-	Usage: mysqlc [MYSQL CONTAINER NAME]
-	Provide the container name you want to connect to and you'll be asked to enter the password
-
-## mysqlc-create-database (Creates a new database)
+	dmysql-server (Start a new MySQL Server)
+	dmysql (Open the mysql cli)
+	dmysql-create-database (Creates a new database)
+	dmysql-import-database (Imports a database)
 	
-	Usage: mysqlc-create-database [MYSQL CONTAINER NAME] [DATABASE NAME]
-	Provide the container to use and the database you want to create
-
 # Install
-	
-	cd directory_with_scripts
+Clone or download this project then run:
 
-	sudo chmod +x mysql*
-	sudo cp mysql* /usr/local/bin
+	$ cd directory_with_scripts
+	$ sudo chmod +x dmysql*
+	$ sudo cp dmysql* /usr/local/bin
 
 # License
 Released under the MIT License

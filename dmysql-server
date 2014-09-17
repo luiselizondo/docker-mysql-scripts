@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import sys
+from subprocess import call
+import argparse
+
+def createVolume(containerVolumeName):
+	''' Create a data only container
+	'''
+	print 'Creating the container using the volumes-from strategy. Using container {container} as the container name'.format(container=containerVolumeName)
+	call("docker run -v /var/lib/mysql --name "+ containerVolumeName+" busybox true", shell=True)
+	return
+
+def runContainer(containerName, rootPassword, hasVolume=False):
+	''' Creates the container
+	'''
+
+	if hasVolume:
+		# Create the container name variable
+		containerVolumeName = containerName.upper() + '_DATA'
+
+		# Create data container
+		createVolume(containerVolumeName)
+
+		call('docker run --volumes-from ' + containerVolumeName + ' --name ' + containerName + ' -e MYSQL_ROOT_PASSWORD="' + rootPassword + '" -d mysql', shell=True)
+	else:
+		call('docker run --name ' + containerName + ' -e MYSQL_ROOT_PASSWORD="' + rootPassword + '" -d mysql', shell=True)
+	return
+
+def main():
+	
+	parser = argparse.ArgumentParser(
+		description="Creates a new MySQL container using the mysql image", 
+		prog="dmysql-server")
+
+	parser.add_argument("containerName", help="The name of the mysql container to create")
+	parser.add_argument("rootPassword", help="The root password to define when creating the container")
+	parser.add_argument("--with-volume", help="Creates a data-only container", action='store_true')
+
+	args = parser.parse_args()
+
+	# If there's a volume
+	if args.with_volume:
+		runContainer(containerName=args.containerName, rootPassword=args.rootPassword, hasVolume=True)
+	else:
+		runContainer(containerName=args.containerName, rootPassword=args.rootPassword)
+
+	return
+
+# Execute main
+main()
